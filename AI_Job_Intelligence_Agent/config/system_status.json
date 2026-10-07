@@ -1,0 +1,14 @@
+{
+  "system": {
+    "name": "AI Job Intelligence Agent",
+    "version": "1.0.0",
+    "environment": "production",
+    "timezone": "Asia/Kolkata",
+    "setup_date": "2026-07-24T11:58:17.546220"
+  },
+  "scheduler": {
+    "enabled": true,
+    "next_execution": "2026-07-25T08:00:00",
+    "last_configured": "2026-07-24T11:58:17.546220"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "indeed-search-cli",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "CLI search tool for Indeed job listings",
+  "scripts": {
+    "start": "bun run src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

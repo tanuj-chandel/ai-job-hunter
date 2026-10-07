@@ -1,0 +1,221 @@
+{
+  "system": {
+    "name": "AI Job Intelligence Agent",
+    "version": "1.0.0",
+    "environment": "production",
+    "timezone": "Asia/Kolkata"
+  },
+  "candidate": {
+    "name": "Tanuj Chandel",
+    "profile_path": "database/master_profile.json",
+    "resume_master_path": "Resume_Master/",
+    "generated_resume_path": "Generated_Resume/"
+  },
+  "schedule": {
+    "daily_execution_time": "08:00",
+    "timezone": "Asia/Kolkata",
+    "retry_on_failure": true,
+    "max_retries": 3,
+    "retry_delay_minutes": 5,
+    "send_notifications": true,
+    "generate_reports": true,
+    "backup_database": true
+  },
+  "job_search": {
+    "locations": [
+      "India",
+      "United Arab Emirates",
+      "Saudi Arabia",
+      "Qatar",
+      "Kuwait",
+      "Oman",
+      "Bahrain",
+      "Remote Worldwide"
+    ],
+    "target_roles": [
+      "Operations Manager",
+      "Warehouse Manager",
+      "Inventory Manager",
+      "Supply Chain Manager",
+      "Store Manager",
+      "Warehouse Operations",
+      "Distribution Manager",
+      "Retail Operations",
+      "Business Operations",
+      "Administration Manager",
+      "Cold Chain Operations",
+      "Inventory Control",
+      "Procurement",
+      "Logistics Manager",
+      "Branch Operations",
+      "Regional Operations"
+    ],
+    "job_portals": [
+      "LinkedIn Jobs",
+      "Indeed",
+      "Naukri",
+      "Foundit",
+      "Glassdoor",
+      "Wellfound",
+      "Google Jobs",
+      "TimesJobs",
+      "Shine",
+      "Apna",
+      "CutShort",
+      "Instahyre",
+      "WorkIndia",
+      "Hirect",
+      "Bayt",
+      "GulfTalent",
+      "Naukrigulf",
+      "Remote OK",
+      "We Work Remotely",
+      "AngelList",
+      "Company Career Pages"
+    ],
+    "search_settings": {
+      "max_jobs_per_portal": 50,
+      "search_radius_km": 50,
+      "posting_age_days": 30,
+      "min_salary_india": 1500000,
+      "min_salary_gulf": 15000,
+      "remote_only": false
+    }
+  },
+  "ai_matching": {
+    "enabled": true,
+    "model": "gpt-4",
+    "score_weights": {
+      "skill_match": 0.30,
+      "experience_match": 0.25,
+      "role_match": 0.20,
+      "salary_match": 0.15,
+      "location_match": 0.10
+    },
+    "thresholds": {
+      "minimum_match_score": 60,
+      "minimum_ats_score": 70,
+      "minimum_hiring_probability": 50
+    },
+    "recommendation_levels": {
+      "apply_immediately": 90,
+      "strong_match": 80,
+      "good_match": 70,
+      "average": 60
+    }
+  },
+  "resume_generation": {
+    "enabled": true,
+    "ats_optimization": true,
+    "customize_for_each_job": true,
+    "output_formats": ["PDF", "DOCX", "MD", "JSON"],
+    "max_resumes_per_day": 10,
+    "quality_check": true,
+    "keyword_optimization": true
+  },
+  "cover_letter_generation": {
+    "enabled": true,
+    "personalization_level": "high",
+    "output_formats": ["PDF", "DOCX"],
+    "max_letters_per_day": 10
+  },
+  "interview_preparation": {
+    "enabled": true,
+    "generate_questions": true,
+    "generate_star_answers": true,
+    "generate_tips": true,
+    "max_preps_per_day": 5
+  },
+  "company_research": {
+    "enabled": true,
+    "sources": ["Glassdoor", "LinkedIn", "Company Website"],
+    "collect_ratings": true,
+    "collect_news": true,
+    "collect_funding": true
+  },
+  "salary_analysis": {
+    "enabled": true,
+    "sources": ["Glassdoor", "Payscale", "Indeed Salaries"],
+    "regional_adjustment": true,
+    "experience_adjustment": true
+  },
+  "file_organization": {
+    "enabled": true,
+    "structure": "date-based",
+    "create_folders": true,
+    "archive_old_data": true,
+    "archive_days": 30
+  },
+  "dashboard": {
+    "enabled": true,
+    "update_frequency": "real-time",
+    "dark_mode": true,
+    "light_mode": true,
+    "responsive": true
+  },
+  "reports": {
+    "daily_report": true,
+    "weekly_report": true,
+    "monthly_report": true,
+    "export_formats": ["PDF", "Excel", "CSV"],
+    "send_email": false,
+    "save_to_disk": true
+  },
+  "notifications": {
+    "desktop": true,
+    "email": false,
+    "telegram": false,
+    "whatsapp": false,
+    "on_completion": true,
+    "on_failure": true,
+    "on_important_matches": true
+  },
+  "database": {
+    "type": "sqlite",
+    "path": "database/ai_job_agent.db",
+    "backup_path": "database/backups/",
+    "backup_frequency": "daily",
+    "keep_backups_days": 30
+  },
+  "security": {
+    "encrypt_personal_data": true,
+    "api_key_storage": "environment",
+    "log_sensitive_operations": true,
+    "compliance_mode": "strict"
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/ai_job_agent.log",
+    "max_size_mb": 10,
+    "backup_count": 5,
+    "log_database_operations": true,
+    "log_job_search": true,
+    "log_ai_operations": true
+  },
+  "performance": {
+    "max_concurrent_searches": 3,
+    "max_documents_per_day": 50,
+    "cache_enabled": true,
+    "cache_expiry_hours": 24,
+    "memory_limit_mb": 1024,
+    "timeout_seconds": 300
+  },
+  "folders": {
+    "jobs": "Jobs/",
+    "applications": "Applications/",
+    "offers": "Offers/",
+    "rejected": "Rejected/",
+    "interviews": "Interviews/",
+    "logs": "Logs/",
+    "reports": "Reports/",
+    "dashboard": "Dashboard/",
+    "resume_master": "Resume_Master/",
+    "generated_resume": "Generated_Resume/",
+    "cover_letters": "Cover_Letters/",
+    "recruiter_messages": "Recruiter_Messages/",
+    "interview_prep": "Interview_Prep/",
+    "company_reports": "Company_Reports/"
+  },
+  "created_at": "2026-07-23T08:15:00Z",
+  "last_updated": "2026-07-23T08:15:00Z"
+}

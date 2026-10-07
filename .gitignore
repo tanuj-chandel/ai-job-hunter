@@ -6,6 +6,7 @@ apply_screenshots/
 session_*.json
 
 # personal data: generated documents and tracker history
+*.pdf
 cv/*.pdf
 cv/main_*.tex
 !cv/main_example.tex

@@ -1,0 +1,195 @@
+%% Example CV - Tanuj Chandel
+%% Comprehensive overview of all competencies, experience, and achievements.
+%% Use as a master reference when tailoring role-specific CVs.
+%%
+%% Compile with: lualatex main_example.tex
+%% (pdflatex often fails on modern MiKTeX with fontawesome5 font-expansion errors.)
+
+\documentclass[11pt,a4paper,sans]{moderncv}
+\moderncvstyle{banking}
+\moderncvcolor{blue}
+
+% Force both first and last name AND section headings to render in moderncv
+% blue (color1). Default banking on lualatex+MiKTeX leaves these black, which
+% looks inconsistent with the rest of the blue accent scheme.
+\renewcommand*{\firstnamestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
+\renewcommand*{\lastnamestyle}[1]{{\fontsize{34}{36}\bfseries\upshape\color{color1}#1}}
+\renewcommand*{\sectionstyle}[1]{{\sectionfont\color{color1}#1}}
+
+\usepackage[utf8]{inputenc}
+\usepackage{needspace}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=blue,
+    pdftitle={Tanuj Chandel - CV},
+    pdfpagemode=FullScreen,
+}
+\usepackage[scale=0.80]{geometry}
+\usepackage{import}
+
+% personal data
+\name{Tanuj}{Chandel}
+\address{Kanpur, Uttar Pradesh, India}{}{}
+\phone[mobile]{+91 7704077700}
+\email{tanuj.chandel@gmail.com}
+\extrainfo{\href{https://linkedin.com/in/tanujchandel}{linkedin.com/in/tanujchandel} \quad \href{https://github.com/tanujchandel}{github.com/tanujchandel}}
+
+\begin{document}
+
+\makecvtitle
+
+% ============================================================
+%     PROFILE STATEMENT
+% ============================================================
+
+\vspace{6pt}
+\small{Results-driven Operations & Supply Chain Manager with 10+ years of experience leading business operations, warehouse logistics, inventory control, and cost management. Proven track record of establishing commercial facilities from greenfield to profitability and reducing produce wastage by 20%+. Currently upskilling in AI-driven workflows (n8n, Claude API, prompt engineering) to build custom business intelligence tools and automate legacy processes. Seeking senior leadership roles in operations, supply chain, or agri-business.}
+
+% ============================================================
+%     CORE COMPETENCIES
+% ============================================================
+
+\section{Core Competencies}
+\vspace{1pt}
+\begin{itemize}
+
+\item \textbf{Operations \& Business Management}: Greenfield Facility Setup, P&L Management, Cost Control, Team Leadership \& HR, Regulatory Compliance, MIS Reporting.
+
+\item \textbf{Warehouse \& Inventory Control}: Inventory Management, FIFO Stock Rotation, Stock Management, Store Operations, Quality Control.
+
+\item \textbf{Supply Chain \& Logistics}: Supply Chain Optimization, Procurement & Purchasing, Vendor & Contract Negotiation, Logistics Coordination.
+
+\item \textbf{AI \& Automation}: AI Workflow Automation, RAG (Retrieval-Augmented Gen.), Prompt Engineering, Custom BI Dashboards, n8n.
+
+\item \textbf{Sales \& Client Relations}: B2B Corporate Sales, Key Account Management, Stakeholder Relationship Management, Market Expansion.
+
+\item \textbf{Software \& Tools}: Microsoft Excel (Advanced Data Analysis), Google Workspace, CRM Platforms, n8n.
+
+\end{itemize}
+
+% ============================================================
+%     PROFESSIONAL EXPERIENCE
+% ============================================================
+
+\section{Professional Experience}
+\vspace{3pt}
+\begin{itemize}
+
+% --- Pitambara Cold Storage ---
+\item{\cventry{Jan 2020--Present}{Founder \& Operations Head}{Pitambara Cold Storage Pvt. Ltd.}{Kanpur, Uttar Pradesh}{}{\vspace{1pt}
+\begin{itemize}
+    \item Established and managed a commercial cold storage facility end-to-end — from project planning and infrastructure setup to profitable daily operations.
+    \item Directed complete warehouse operations including receiving, storage, inventory control, stock movement, and dispatch, maintaining accurate stock records with minimal losses.
+    \item Implemented inventory management systems and stock-tracking procedures that reduced produce wastage by over 20\% and improved warehouse throughput.
+    \item Managed daily cash management operations including customer billing, cash collection, payment reconciliation, and financial record-keeping.
+    \item Supervised procurement activities, vendor selection, purchase planning, and supplier price negotiations to control input costs.
+    \item Coordinated transportation and logistics scheduling to ensure timely inbound and outbound product deliveries.
+    \item Monitored operational budgets and P\&L performance, implementing cost-control measures that improved facility profitability.
+    \item Supervised and scheduled warehouse staff, drivers, and technicians, maintaining high operational efficiency and staff retention.
+    \item Maintained quality standards, safety procedures, and regulatory compliance across all facility operations.
+    \item Prepared operational, inventory, and cash reports (MIS) for ongoing management review and decision-making.
+\end{itemize}}}
+
+\vspace{3pt}
+
+% --- EuroKids Preschool ---
+\item{\cventry{2015--2019}{Franchise Owner \& Operations Director}{EuroKids Preschool (Franchise)}{Kanpur, Uttar Pradesh}{}{\vspace{1pt}
+\begin{itemize}
+    \item Managed complete day-to-day business and administrative operations for a franchise location.
+    \item Led end-to-end franchise setup — from infrastructure buildout and vendor negotiations to brand compliance audits — delivering a flawless launch within budget and timeline.
+    \item Ran a profitable preschool business for 4 years, managing P\&L, fee collections, operational costs, and staff payroll with consistent annual surpluses.
+    \item Drove a 35\%+ increase in enrollment through community outreach, parent engagement events, and targeted marketing campaigns.
+    \item Recruited, trained, and mentored a team of 12 teachers and administrative staff; implemented performance review processes that improved staff retention and service quality.
+    \item Ensured full compliance with EuroKids brand standards and regulatory requirements, earning franchise renewal recognition.
+\end{itemize}}}
+
+\vspace{3pt}
+
+% --- Mahindra & Mahindra ---
+\item{\cventry{2011--2013}{Sales \& Marketing Manager -- Corporate Sales}{Mahindra \& Mahindra (Automotive Division)}{Kanpur Region, India}{}{\vspace{1pt}
+\begin{itemize}
+    \item Managed B2B corporate sales operations across assigned territories for bulk fleet and vehicle procurement, consistently exceeding sales targets by 10--20\% month-over-month.
+    \item Led end-to-end B2B sales cycles — from prospecting and needs assessment to proposal, negotiation, and deal closure.
+    \item Generated new business opportunities and developed 15+ new key corporate accounts, building long-term relationships with procurement heads and fleet managers.
+    \item Coordinated order processing, vehicle delivery logistics, and post-sale customer support.
+    \item Maintained CRM records, sales reports, and revenue forecasts for regional leadership review.
+\end{itemize}}}
+
+\end{itemize}
+
+% ============================================================
+%     AI PROJECTS & TECHNOLOGY INITIATIVES
+% ============================================================
+
+\section{AI Projects \& Technology Initiatives}
+\vspace{1pt}
+\begin{itemize}
+
+\item \textbf{LeadMail AI -- AI-Powered Lead Outreach Tool}: Designed and built a single-page HTML/JS application integrated with the Claude API to automate personalized B2B email generation, featuring real-time AI generation, error handling, and stats dashboard.
+
+\item \textbf{Cold Storage Business Intelligence Dashboard}: Building a Google Sheets + AI automation dashboard for Pitambara Cold Storage to track inventory levels, vendor performance, and revenue metrics in real-time, replacing manual reporting.
+
+\item \textbf{RAG-Based Knowledge Assistant (Planned)}: Designing a LangChain + Claude API RAG assistant for agri-ops to query cold chain guidelines, crop preservation guidelines, and SOPs using natural language.
+
+\item \textbf{Mandi Bot (Mandibot)}: AI-enabled automation and marketplace tool for wholesale agricultural markets (Mandis) in India, optimizing farm-to-market pricing, logistics, and vendor negotiations.
+
+\item \textbf{SmileCare Dental Clinic SaaS}: A comprehensive SaaS and mobile application (Flutter) for dental clinic management, scheduling, and billing.
+
+\item \textbf{Kanpur Hospital AI Automation}: Operations automation system for healthcare facilities in Kanpur, utilizing n8n workflows and AI integrations to streamline patient scheduling and billing operations.
+
+\item \textbf{Hotel AI}: Automated AI booking and guest management system for hotel operations.
+
+\end{itemize}
+
+% ============================================================
+%     EDUCATION
+% ============================================================
+
+\section{Education}
+\vspace{1pt}
+\begin{itemize}
+
+\item{\cventry{2009--2011}{MBA -- Finance \& Marketing}{IIPM, New Delhi / IMI Belgium (Dual)}{New Delhi, India}{}{}}
+
+\vspace{3pt}
+
+\item{\cventry{2005--2009}{B.Tech -- Electronics \& Communication Engineering}{Hindustan Institute of Technology, Greater Noida (UPTU)}{Greater Noida, India}{}{}}
+
+\end{itemize}
+
+% ============================================================
+%     CERTIFICATIONS & TRAINING
+% ============================================================
+
+\section{Certifications \& Training}
+\vspace{1pt}
+\begin{itemize}
+\item \textbf{B10X AI Program} -- AI Tools, Automation \& AI-Driven Business Workflows (In Progress, 2024--25)
+\item \textbf{Industrial Labour Relations} -- Cornell University, USA (15-Day Intensive Program)
+\item \textbf{Management Trainee Program} -- AVIVA Life Insurance Ltd. (Business Development \& Team Management, 3 Months)
+\end{itemize}
+
+% ============================================================
+%     LANGUAGES
+% ============================================================
+
+\section{Languages}
+\vspace{1pt}
+\begin{itemize}
+\item English (professional/fluent), Hindi (native).
+\end{itemize}
+
+% ============================================================
+%     REFERENCES
+% ============================================================
+
+\section{References}
+\vspace{1pt}
+\begin{itemize}
+\item Available upon request.
+\end{itemize}
+
+\end{document}

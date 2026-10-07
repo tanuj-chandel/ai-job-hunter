@@ -1,0 +1,247 @@
+{
+  "candidate": {
+    "full_name": "Tanuj Chandel",
+    "email": "tanuj@example.com",  // TODO: Replace with actual email
+    "phone": "+91-XXXXXXXXXX",  // TODO: Replace with actual phone
+    "linkedin_url": "https://linkedin.com/in/tanujchandel",
+    "portfolio_url": "",
+    "github_url": "",
+    "current_location": "Kanpur, Uttar Pradesh, India",
+    "preferred_locations": [
+      "India",
+      "United Arab Emirates",
+      "Saudi Arabia",
+      "Qatar",
+      "Kuwait",
+      "Oman",
+      "Bahrain",
+      "Remote Worldwide"
+    ],
+    "salary_expectations": {
+      "india": {
+        "min": 1500000,
+        "max": 2000000,
+        "currency": "INR"
+      },
+      "gulf": {
+        "min": 15000,
+        "max": 20000,
+        "currency": "AED"
+      },
+      "remote_worldwide": {
+        "min": 30000,
+        "max": 50000,
+        "currency": "USD"
+      }
+    },
+    "notice_period": "Immediate",
+    "visa_status": "Indian citizen, requires visa sponsorship for Gulf countries",
+    "preferred_roles": [
+      "Operations Manager",
+      "Warehouse Manager",
+      "Inventory Manager",
+      "Supply Chain Manager",
+      "Store Manager",
+      "Warehouse Operations",
+      "Distribution Manager",
+      "Retail Operations",
+      "Business Operations",
+      "Administration Manager",
+      "Cold Chain Operations",
+      "Inventory Control",
+      "Procurement",
+      "Logistics Manager",
+      "Branch Operations",
+      "Regional Operations"
+    ]
+  },
+  "education": [
+    {
+      "degree": "MBA, Finance & Marketing",
+      "institution": "IIPM, New Delhi / IMI Belgium (Dual)",
+      "years": "2009-2011",
+      "details": "Dual degree program"
+    },
+    {
+      "degree": "B.Tech, Electronics & Communication Engineering",
+      "institution": "Hindustan Institute of Technology, Greater Noida (UPTU)",
+      "years": "2005-2009",
+      "details": ""
+    }
+  ],
+  "experience": [
+    {
+      "title": "Founder & Operations Head",
+      "company": "Pitambara Cold Storage Pvt. Ltd.",
+      "location": "Kanpur, Uttar Pradesh",
+      "years": "Jan 2020 - Present",
+      "responsibilities": [
+        "Built and scaled a commercial cold storage facility from greenfield to profitability",
+        "Managed full warehouse operations (receiving, storage, inventory control, dispatch)",
+        "Ran cash management (billing, collection, reconciliation)",
+        "Reduced produce wastage 20%+ via inventory management systems",
+        "Implemented AI-assisted dashboards for inventory tracking and demand forecasting",
+        "Built and sustained a supplier network of 50+ farmers, traders, and transporters",
+        "Key Achievement: Built business from zero to profitable facility serving 50+ farmers/vendors"
+      ],
+      "skills": [
+        "Operations Management",
+        "Warehouse Management",
+        "Inventory Control",
+        "Cash Management",
+        "Supply Chain Coordination",
+        "P&L Management",
+        "Team Leadership"
+      ]
+    },
+    {
+      "title": "Franchise Owner & Operations Director",
+      "company": "EuroKids Preschool",
+      "location": "Kanpur, Uttar Pradesh",
+      "years": "2015 - 2019",
+      "responsibilities": [
+        "Managed full P&L, fee collection, payroll, and daily financial reconciliation",
+        "Drove 35%+ enrollment growth through community outreach and marketing",
+        "Maintained profitability 4 consecutive years",
+        "Recruited, trained, and supervised 12 teaching/admin staff"
+      ],
+      "skills": [
+        "Franchise Operations",
+        "P&L Management",
+        "Team Building",
+        "Marketing",
+        "Business Development"
+      ]
+    },
+    {
+      "title": "Sales & Marketing Manager - Corporate Sales",
+      "company": "Mahindra & Mahindra (Automotive Division)",
+      "location": "Kanpur Region",
+      "years": "2011 - 2013",
+      "responsibilities": [
+        "Managed B2B corporate sales for bulk fleet/vehicle procurement",
+        "Ran full sales cycle from prospecting to close",
+        "Acquired 15+ new corporate accounts",
+        "Exceeded sales targets 10-20% month-over-month"
+      ],
+      "skills": [
+        "B2B Sales",
+        "Corporate Sales",
+        "Account Management",
+        "Sales Strategy"
+      ]
+    }
+  ],
+  "skills": {
+    "primary": [
+      "Operations Management",
+      "Warehouse & Inventory Management",
+      "Supply Chain Coordination",
+      "Cash Management & Reconciliation",
+      "P&L / Budget Management",
+      "Cost Control"
+    ],
+    "secondary": [
+      "Procurement & Vendor Management",
+      "Logistics Coordination",
+      "Team Leadership & Staff Supervision",
+      "Quality Control",
+      "Regulatory Compliance",
+      "MIS Reporting"
+    ],
+    "technical": [
+      "Microsoft Excel",
+      "Microsoft Word",
+      "Google Workspace",
+      "CRM platforms",
+      "AI/LLM tools",
+      "RAG (Retrieval-Augmented Generation)",
+      "Prompt Engineering"
+    ],
+    "domains": [
+      "Cold chain & agri-logistics",
+      "Franchise operations",
+      "B2B corporate sales",
+      "Agri-business supply chain"
+    ]
+  },
+  "certifications": [
+    {
+      "name": "Industrial Labour Relations",
+      "issuer": "Cornell University, USA",
+      "year": "15-day intensive program"
+    },
+    {
+      "name": "Management Trainee Program",
+      "issuer": "AVIVA Life Insurance Ltd.",
+      "year": "3 months - Business Development & Team Management"
+    },
+    {
+      "name": "B10X AI Program",
+      "issuer": "AI tools, automation & AI-driven business workflows",
+      "year": "2024-2025 (in progress)"
+    }
+  ],
+  "languages": [
+    {"language": "English", "proficiency": "Fluent"},
+    {"language": "Hindi", "proficiency": "Native"}
+  ],
+  "projects": [
+    {
+      "name": "LeadMail AI",
+      "description": "Claude API-integrated outreach tool for lead generation",
+      "technologies": ["Claude API", "Python", "Automation"],
+      "year": "2024"
+    },
+    {
+      "name": "Cold Storage BI Dashboard",
+      "description": "AI-powered business intelligence dashboard for cold storage operations",
+      "technologies": ["Data Analytics", "Dashboard", "AI"],
+      "year": "2024 (building)"
+    },
+    {
+      "name": "RAG Knowledge Assistant for Agri-Ops",
+      "description": "LangChain + Claude API + FAISS/Chroma based knowledge assistant",
+      "technologies": ["LangChain", "Claude API", "FAISS", "Chroma", "RAG"],
+      "year": "2024 (planning)"
+    }
+  ],
+  "ai_integration": {
+    "ai_tools_used": ["ChatGPT", "Claude", "LLM tools"],
+    "ai_skills": ["Prompt Engineering", "Workflow Automation", "RAG systems"],
+    "ai_projects": ["LeadMail AI", "Cold Storage BI Dashboard", "RAG Knowledge Assistant"]
+  },
+  "behavioral_profile": {
+    "strengths": [
+      "Building operations from zero",
+      "Hands-on cost/cash control",
+      "Vendor and multi-stakeholder relationship management",
+      "Entrepreneurial ownership"
+    ],
+    "thrives_in": [
+      "Founder-mode / high-ownership operating roles",
+      "Agri-business, logistics, or franchise operations",
+      "Roles where he can build and scale from ground up"
+    ],
+    "excited_by": [
+      "Operations and agri-business leadership",
+      "Applying AI tools and automation to operations",
+      "Business transformation and process optimization"
+    ]
+  },
+  "target_sectors": [
+    "Operations / Supply Chain / Logistics",
+    "Agri-business",
+    "AI-enabled business operations",
+    "Corporate / B2B Sales"
+  ],
+  "deal_breakers": {
+    "minimum_salary_india": 1500000,
+    "minimum_salary_gulf": 15000,
+    "notice_period": "Immediate joining required",
+    "family_relocation_limits": "Open to relocation nationwide in India & major Gulf hubs",
+    "visa_sponsorship_gulf": "Requires employer visa sponsorship (non-negotiable)"
+  },
+  "created_at": "2026-07-23T08:03:22Z",
+  "last_updated": "2026-07-23T08:03:22Z"
+}
