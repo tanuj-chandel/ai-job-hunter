@@ -1,0 +1,42 @@
+# credentials and sessions — never commit
+credentials.env
+credentials.json
+apply_screenshots/
+*.session
+session_*.json
+
+# personal data: generated documents and tracker history
+cv/*.pdf
+cv/main_*.tex
+!cv/main_example.tex
+cover_letters/
+documents/
+job_search_tracker*.csv
+needs_manual_apply.csv
+pending_review_questions.csv
+answered_questions_cache.json
+scratch/
+
+# latex build artefacts
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# node (portal cli skills)
+node_modules/
+dist/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
