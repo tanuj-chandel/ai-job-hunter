@@ -21,16 +21,10 @@ BANDS = [
     {"name": "Low Fit (< 70%)",        "min": 0,  "max": 69,  "label": "Low"},
 ]
 
+import tracker_db
+
 def load_data():
-    if not os.path.exists(TRACKER_FILE):
-        print(f"[Error] Tracker file not found: {TRACKER_FILE}", file=sys.stderr)
-        return []
-    records = []
-    with open(TRACKER_FILE, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            records.append(row)
-    return records
+    return tracker_db.get_all_jobs()
 
 def parse_score(val):
     try:

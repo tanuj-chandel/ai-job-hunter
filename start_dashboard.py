@@ -141,6 +141,12 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 def run():
     os.chdir(DIRECTORY)
+    try:
+        import tracker_db
+        tracker_db.export_to_csv()
+    except Exception as e:
+        print(f"[Dashboard] Warning: Could not auto-export tracker.db to CSV: {e}")
+
     with socketserver.TCPServer(("", PORT), Handler) as httpd:
         print(f"==================================================")
         print(f"  AI Job Search Assistant — Web Dashboard Server")

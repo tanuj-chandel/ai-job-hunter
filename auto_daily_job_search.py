@@ -50,20 +50,24 @@ def step2_generate_cv_packages():
         except Exception as e:
             print(f"[STEP 2] CV Package exception: {e}", flush=True)
 
-def step3_run_real_auto_apply():
-    print("\n[STEP 3] Launching Real Browser Auto-Apply Agent...", flush=True)
+def step3_run_real_auto_apply(auto_apply=False):
+    mode_str = "Auto-Apply (--auto-apply)" if auto_apply else "Safe Mode (Discover & Draft)"
+    print(f"\n[STEP 3] Launching Browser Agent [{mode_str}]...", flush=True)
     apply_script = os.path.join(BASE_DIR, "browser_apply_agent.py")
     if os.path.exists(apply_script):
         try:
             cmd = [sys.executable, apply_script, "--jobs", "all", "--visible"]
+            if auto_apply:
+                cmd.append("--auto-apply")
             res = subprocess.run(cmd, cwd=BASE_DIR, timeout=900)
-            print(f"[STEP 3] Auto-apply completed with exit code: {res.returncode}", flush=True)
+            print(f"[STEP 3] Agent completed with exit code: {res.returncode}", flush=True)
         except Exception as e:
-            print(f"[STEP 3] Auto-apply exception: {e}", flush=True)
+            print(f"[STEP 3] Agent exception: {e}", flush=True)
 
 def main():
+    auto_apply = "--auto-apply" in sys.argv
     print("=" * 65)
-    print(f"  AI JOB SEARCH — FULL AUTOMATED DIRECT APPLY PIPELINE")
+    print(f"  AI JOB SEARCH — PIPELINE (Safe Mode: {'OFF (Auto-Apply)' if auto_apply else 'ON (Draft Only)'})")
     print(f"  Execution Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 65)
 
@@ -74,10 +78,10 @@ def main():
     step2_generate_cv_packages()
 
     # 3. Auto-apply to all unapplied jobs
-    step3_run_real_auto_apply()
+    step3_run_real_auto_apply(auto_apply=auto_apply)
 
     print("\n" + "=" * 65)
-    print("  ALL STEPS COMPLETE — All real applications submitted and logged!")
+    print("  ALL STEPS COMPLETE — Pipeline execution logged!")
     print("=" * 65 + "\n")
 
 if __name__ == "__main__":

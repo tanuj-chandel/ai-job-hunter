@@ -42,56 +42,23 @@ def log_scraper_error(source, message, exc=None):
     except Exception as io_err:
         print(f"  [CRITICAL] Failed to write to {ERROR_LOG}: {io_err}", flush=True)
 
-# ── Candidate profile ──────────────────────────────────────────────────────────
-CANDIDATE_NAME  = "Tanuj Chandel"
-CANDIDATE_EMAIL = "tanuj.chandel@gmail.com"
+# ── Candidate profile & queries from config ──────────────────────────────
+from config_loader import get_candidate_info, get_fit_score_tiers, get_search_queries
 
-# ── Search queries per portal (Remote AI Evaluator / Trainer / Prompt Engineering) ──
-LINKEDIN_SEARCHES = [
-    {"keywords": "AI Trainer",                 "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Evaluator",               "location": "Remote", "region": "Remote"},
-    {"keywords": "Prompt Engineer",            "location": "Remote", "region": "Remote"},
-    {"keywords": "RLHF Specialist",            "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Data Annotation",         "location": "Remote", "region": "Remote"},
-    {"keywords": "Model Evaluation Specialist","location": "Remote", "region": "Remote"},
-    {"keywords": "LLM Evaluator",              "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Content Evaluator",       "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Tutor",                   "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Quality Assessor",        "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Trainer",                 "location": "Worldwide", "region": "Remote"},
-    {"keywords": "AI Evaluator",               "location": "India", "region": "Remote"},
-    {"keywords": "Prompt Engineer",            "location": "India", "region": "Remote"},
-]
+_candidate = get_candidate_info()
+CANDIDATE_NAME  = _candidate.get("full_name", "Candidate")
+CANDIDATE_EMAIL = _candidate.get("email", "")
 
-NAUKRI_SEARCHES = [
-    {"keywords": "AI Trainer",                 "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Evaluator",               "location": "Remote", "region": "Remote"},
-    {"keywords": "Prompt Engineer",            "location": "Remote", "region": "Remote"},
-    {"keywords": "Data Annotation",            "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Specialist",              "location": "Remote", "region": "Remote"},
-    {"keywords": "Model Evaluator",            "location": "Remote", "region": "Remote"},
-]
+LINKEDIN_SEARCHES  = get_search_queries("linkedin")
+NAUKRI_SEARCHES    = get_search_queries("naukri")
+BAYT_SEARCHES      = get_search_queries("bayt")
+INDEED_SEARCHES    = get_search_queries("indeed")
+GLASSDOOR_SEARCHES = get_search_queries("glassdoor")
 
-BAYT_SEARCHES = [
-    {"keywords": "AI Specialist",              "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Trainer",                 "location": "Dubai",  "region": "Remote"},
-    {"keywords": "Data Annotation",            "location": "Remote", "region": "Remote"},
-]
-
-INDEED_SEARCHES = [
-    {"keywords": "AI Trainer",                 "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Evaluator",               "location": "Remote", "region": "Remote"},
-    {"keywords": "Prompt Engineer",            "location": "Remote", "region": "Remote"},
-    {"keywords": "Data Annotation Specialist", "location": "Remote", "region": "Remote"},
-    {"keywords": "LLM Evaluator",              "location": "Remote", "region": "Remote"},
-]
-
-GLASSDOOR_SEARCHES = [
-    {"keywords": "AI Trainer",                 "location": "Remote", "region": "Remote"},
-    {"keywords": "AI Evaluator",               "location": "Remote", "region": "Remote"},
-    {"keywords": "Prompt Engineer",            "location": "Remote", "region": "Remote"},
-]
-
+_tiers = get_fit_score_tiers()
+HIGH_FIT_KEYWORDS = _tiers.get("high", [])
+MED_FIT_KEYWORDS  = _tiers.get("medium", [])
+LOW_FIT_KEYWORDS  = _tiers.get("disqualifiers", [])
 
 def load_creds():
     c = {}
@@ -113,66 +80,33 @@ def make_job_id(portal_prefix, company, title):
     return f"{portal_prefix}_{s}_{int(time.time()) % 100000}"
 
 def fit_score(title):
-    """Score job relevance based on Tanuj's background (B.Tech ECE + MBA + AI Evaluation + Operations)."""
+    """Score job relevance based on candidate profile keywords."""
     title_l = title.lower()
-    # High fit — AI Evaluation, Prompting, RLHF, Business/Tech Operations
-    HIGH = ["ai evaluator", "ai trainer", "prompt engineer", "rlhf", "model evaluator",
-            "llm evaluator", "ai content evaluator", "ai quality", "annotation specialist",
-            "ai specialist", "ai tutor", "model trainer", "prompt specialist",
-            "ai annotator", "ai data annotator", "ai benchmark", "ai reviewer",
-            "video data annotator", "data annotator", "ai agent", "quality analyst",
-            "business operations", "operations lead", "operations manager", "project manager",
-            "operations analyst", "digital assets operations", "process automation", "data analyst"]
-    MED  = ["evaluator", "trainer", "tutor", "prompt", "annotation", "annotator",
-            "machine learning", "artificial intelligence", "nlp", "llm", "ai",
-            "data labeler", "content moderator", "quality analyst", "data specialist",
-            "prompting", "curator", "reviewer", "rater", "search quality rater",
-            "operations", "project lead", "program manager", "analytics", "business analyst",
-            "data science", "process improvement"]
-    LOW  = ["storekeeper", "store keeper", "forklift", "driver",
-            "cleaner", "security", "receptionist", "telecaller",
-            "waiter", "cashier", "cook", "chef", "laborer", "helper", "packer",
-            "pharmacy", "pharmacist", "nurse", "construction", "electrician", "plumber"]
-    for kw in LOW:
+    for kw in LOW_FIT_KEYWORDS:
         if kw in title_l:
             return 0  # disqualify
-    for kw in HIGH:
+    for kw in HIGH_FIT_KEYWORDS:
         if kw in title_l:
             return 85 + random.randint(0, 12)
-    for kw in MED:
+    for kw in MED_FIT_KEYWORDS:
         if kw in title_l:
             return 72 + random.randint(0, 10)
     return 65 + random.randint(0, 5)
 
+import tracker_db
+
 def load_existing_urls():
     """Return set of already-tracked URLs to avoid duplicates."""
-    urls = set()
-    if os.path.exists(TRACKER):
-        with open(TRACKER, encoding='utf-8') as f:
-            for row in csv.DictReader(f):
-                u = row.get('URL','').strip()
-                if u: urls.add(u)
-    return urls
+    return tracker_db.get_existing_urls()
 
 def append_to_tracker(jobs):
-    """Append new jobs to the tracker CSV."""
-    fieldnames = ['ID','Company','Title','Location','Region','FitScore','Status','CVFile','CoverFile','URL','AppliedDate','Source']
-    file_exists = os.path.exists(TRACKER)
-    
-    existing_urls = load_existing_urls()
-    new_count = 0
-    
-    with open(TRACKER, 'a', newline='', encoding='utf-8') as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction='ignore')
-        if not file_exists:
-            writer.writeheader()
-        for job in jobs:
-            if job.get('URL','') not in existing_urls:
-                writer.writerow(job)
-                existing_urls.add(job['URL'])
-                new_count += 1
-
-    return new_count
+    """Append new jobs to SQLite tracker and export to CSV for dashboard."""
+    existing_urls = tracker_db.get_existing_urls()
+    new_jobs = [j for j in jobs if j.get('URL', '') not in existing_urls]
+    if new_jobs:
+        tracker_db.insert_jobs(new_jobs)
+        tracker_db.export_to_csv()
+    return len(new_jobs)
 
 def screenshot(page, label):
     try:

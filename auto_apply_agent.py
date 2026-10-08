@@ -31,11 +31,25 @@ def load_credentials():
                     creds[k.strip()] = v.strip().strip('"').strip("'")
     return creds
 
+from config_loader import get_candidate_info
+
 def auto_compile_package(company, title, location):
     def make_slug(name):
         import re
         slug = re.sub(r'[^a-zA-Z0-9]', '_', name.lower())
         return re.sub(r'_+', '_', slug).strip('_')
+
+    cand = get_candidate_info()
+    first_name = cand.get("first_name", "Jane")
+    last_name  = cand.get("last_name", "Doe")
+    full_name  = cand.get("full_name", f"{first_name} {last_name}")
+    address    = cand.get("location", "Remote")
+    phone      = cand.get("phone", "")
+    email      = cand.get("email", "")
+    li_url     = cand.get("linkedin_url", "")
+    li_disp    = cand.get("linkedin_display", "")
+    bio        = cand.get("bio_summary", "Detail-oriented AI Evaluator & Prompt Engineer.")
+    cover_intro= cand.get("cover_letter_intro", "Dedicated to delivering accurate AI training evaluations.")
 
     slug = make_slug(company)
     cv_filename = f"main_{slug}.tex"
@@ -47,21 +61,21 @@ def auto_compile_package(company, title, location):
     os.makedirs(COVER_DIR, exist_ok=True)
 
     if not os.path.exists(cv_path):
-        cv_tex = f"""%% CV - Tanuj Chandel
+        cv_tex = f"""%% CV - {full_name}
 %% Tailored for: {title} at {company} ({location})
 \\documentclass[11pt,a4paper,sans]{{moderncv}}
 \\moderncvstyle{{banking}}
 \\moderncvcolor{{blue}}
 
-\\name{{Tanuj}}{{Chandel}}
-\\address{{India (Available for 100\\% Remote Global Roles)}}{{}}{{}}
-\\phone[mobile]{{+91 7704077700}}
-\\email{{tanuj.chandel@gmail.com}}
-\\extrainfo{{\\href{{https://linkedin.com/in/tanujchandel}}{{linkedin.com/in/tanujchandel}}}}
+\\name{{{first_name}}}{{{last_name}}}
+\\address{{{address}}}{{}}{{}}
+\\phone[mobile]{{{phone}}}
+\\email{{{email}}}
+\\extrainfo{{\\href{{{li_url}}}{{{li_disp}}}}}
 
 \\begin{{document}}
 \\makecvtitle
-\\small{{Detail-oriented AI Evaluator, Prompt Engineer \\& Model Trainer with an engineering background (B.Tech ECE) and MBA. Experienced in assessing LLM responses, RLHF benchmark quality, instruction following, prompt optimization, and Python data automation. Tailored for {title} at {company}.}}
+\\small{{{bio} Tailored for {title} at {company}.}}
 
 \\section{{Core Competencies}}
 \\begin{{itemize}}
@@ -77,12 +91,12 @@ def auto_compile_package(company, title, location):
     if not os.path.exists(cover_path):
         cover_tex = f"""\\documentclass[]{{cover}}
 \\begin{{document}}
-\\namesection{{}}{{Tanuj Chandel}}{{\\href{{mailto:tanuj.chandel@gmail.com}}{{tanuj.chandel@gmail.com}} | +91 7704077700}}
+\\namesection{{}}{{{full_name}}}{{\\href{{mailto:{email}}}{{{email}}} | {phone}}}
 \\currentdate{{\\today}}
 \\lettercontent{{Dear Hiring Manager at {company},}}
-\\lettercontent{{I am writing to express my strong interest in the **{title}** position at **{company}**. With an engineering degree (B.Tech ECE) and MBA, combined with hands-on practice in LLM evaluation, prompt engineering, and Python workflow automation, I am dedicated to delivering accurate, rubric-compliant AI training evaluations.}}
+\\lettercontent{{I am writing to express my strong interest in the **{title}** position at **{company}**. {cover_intro}}}
 \\closing{{Kind regards,}}
-\\signature{{Tanuj Chandel}}
+\\signature{{{full_name}}}
 \\end{{document}}
 """
         with open(cover_path, "w", encoding="utf-8") as f:
@@ -104,37 +118,33 @@ def auto_compile_package(company, title, location):
 
     return cv_res, cover_res
 
+import tracker_db
+
 def apply_selected_jobs(job_ids):
     creds = load_credentials()
-    rows = []
     applied_count = 0
     updated_jobs = []
 
-    if os.path.exists(TRACKER_FILE):
-        with open(TRACKER_FILE, "r", encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            fieldnames = reader.fieldnames or ["ID", "Company", "Title", "Location", "Region", "FitScore", "Status", "CVFile", "CoverFile", "URL", "AppliedDate"]
-            for row in reader:
-                jid = str(row.get("ID", ""))
-                url = str(row.get("URL", ""))
-                if jid in job_ids or url in job_ids or "all" in job_ids:
-                    company = row.get("Company", "")
-                    title = row.get("Title", "")
-                    location = row.get("Location", "")
-                    
-                    cv_file, cover_file = auto_compile_package(company, title, location)
-                    if row.get("Status") != "Real Applied": row["Status"] = "Tailored & Ready"
-                    row["CVFile"] = cv_file or row.get("CVFile", "")
-                    row["CoverFile"] = cover_file or row.get("CoverFile", "")
-                    row["AppliedDate"] = datetime.now().strftime("%Y-%m-%d")
-                    applied_count += 1
-                    updated_jobs.append(row)
-                rows.append(row)
+    rows = tracker_db.get_all_jobs()
+    for row in rows:
+        jid = str(row.get("ID", ""))
+        url = str(row.get("URL", ""))
+        if jid in job_ids or url in job_ids or "all" in job_ids:
+            company = row.get("Company", "")
+            title = row.get("Title", "")
+            location = row.get("Location", "")
+            
+            cv_file, cover_file = auto_compile_package(company, title, location)
+            if row.get("Status") != "Real Applied": row["Status"] = "Tailored & Ready"
+            row["CVFile"] = cv_file or row.get("CVFile", "")
+            row["CoverFile"] = cover_file or row.get("CoverFile", "")
+            row["AppliedDate"] = datetime.now().strftime("%Y-%m-%d")
+            applied_count += 1
+            updated_jobs.append(row)
+            if jid:
+                tracker_db.update_job(jid, row)
 
-        with open(TRACKER_FILE, "w", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=fieldnames)
-            writer.writeheader()
-            writer.writerows(rows)
+    tracker_db.export_to_csv()
 
     return {
         "status": "success",

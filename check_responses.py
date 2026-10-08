@@ -46,26 +46,17 @@ def clean_company_name(name):
     t = re.sub(r'[^a-z0-9\s]', ' ', t)
     return re.sub(r'\s+', ' ', t).strip()
 
+import tracker_db
+
 def load_tracker():
-    """Load jobs from job_search_tracker.csv."""
-    if not os.path.exists(TRACKER_FILE):
-        print(f"[Error] Tracker not found: {TRACKER_FILE}", file=sys.stderr)
-        return [], []
-    rows = []
-    fieldnames = []
-    with open(TRACKER_FILE, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        fieldnames = reader.fieldnames or []
-        for r in reader:
-            rows.append(r)
-    return rows, fieldnames
+    """Load jobs from tracker_db."""
+    rows = tracker_db.get_all_jobs()
+    return rows, tracker_db.FIELDS
 
 def save_tracker(rows, fieldnames):
-    """Safely write updated rows back to job_search_tracker.csv."""
-    with open(TRACKER_FILE, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
+    """Safely write updated rows back to tracker.db and export to CSV."""
+    tracker_db.insert_jobs(rows)
+    tracker_db.export_to_csv()
 
 def build_company_lookup(tracker_rows):
     """

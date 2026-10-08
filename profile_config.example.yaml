@@ -1,0 +1,125 @@
+# Example Profile & Search Configuration for AI Job Hunter
+# Copy this file to profile_config.yaml (gitignored) and customize for your profile.
+
+candidate:
+  first_name: "Jane"
+  last_name: "Doe"
+  full_name: "Jane Doe"
+  email: "jane.doe@example.com"
+  phone: "+1 555-0100"
+  location: "Remote / Available Globally"
+  city: "San Francisco"
+  linkedin_url: "https://linkedin.com/in/janedoe"
+  linkedin_display: "linkedin.com/in/janedoe"
+  bio_summary: "Detail-oriented AI Evaluator, Prompt Engineer & Model Trainer with technical background. Experienced in assessing LLM responses, RLHF benchmark quality, instruction following, prompt optimization, and Python data automation."
+  cover_letter_intro: "With a strong technical and analytical background, paired with hands-on practice in LLM evaluation, prompt engineering, and Python workflow automation, I am dedicated to delivering accurate, rubric-compliant AI training evaluations."
+
+fit_score_tiers:
+  high:
+    - "ai evaluator"
+    - "ai trainer"
+    - "prompt engineer"
+    - "rlhf"
+    - "model evaluator"
+    - "llm evaluator"
+    - "ai content evaluator"
+    - "ai quality"
+    - "annotation specialist"
+    - "ai specialist"
+    - "ai tutor"
+    - "model trainer"
+    - "prompt specialist"
+    - "ai annotator"
+    - "ai data annotator"
+    - "ai benchmark"
+    - "ai reviewer"
+    - "video data annotator"
+    - "data annotator"
+    - "ai agent"
+    - "quality analyst"
+    - "business operations"
+    - "operations lead"
+    - "operations manager"
+    - "project manager"
+    - "operations analyst"
+    - "digital assets operations"
+    - "process automation"
+    - "data analyst"
+  medium:
+    - "evaluator"
+    - "trainer"
+    - "tutor"
+    - "prompt"
+    - "annotation"
+    - "annotator"
+    - "machine learning"
+    - "artificial intelligence"
+    - "nlp"
+    - "llm"
+    - "ai"
+    - "data labeler"
+    - "content moderator"
+    - "quality analyst"
+    - "data specialist"
+    - "prompting"
+    - "curator"
+    - "reviewer"
+    - "rater"
+    - "search quality rater"
+    - "operations"
+    - "project lead"
+    - "program manager"
+    - "analytics"
+    - "business analyst"
+    - "data science"
+    - "process improvement"
+  disqualifiers:
+    - "storekeeper"
+    - "store keeper"
+    - "forklift"
+    - "driver"
+    - "cleaner"
+    - "security"
+    - "receptionist"
+    - "telecaller"
+    - "waiter"
+    - "cashier"
+    - "cook"
+    - "chef"
+    - "laborer"
+    - "helper"
+    - "packer"
+    - "pharmacy"
+    - "pharmacist"
+    - "nurse"
+    - "construction"
+    - "electrician"
+    - "plumber"
+  thresholds:
+    apply: 85
+    review: 70
+
+search_queries:
+  linkedin:
+    - { keywords: "AI Trainer", location: "Remote", region: "Remote" }
+    - { keywords: "AI Evaluator", location: "Remote", region: "Remote" }
+    - { keywords: "Prompt Engineer", location: "Remote", region: "Remote" }
+    - { keywords: "RLHF Specialist", location: "Remote", region: "Remote" }
+    - { keywords: "AI Data Annotation", location: "Remote", region: "Remote" }
+    - { keywords: "Model Evaluation Specialist", location: "Remote", region: "Remote" }
+    - { keywords: "LLM Evaluator", location: "Remote", region: "Remote" }
+  naukri:
+    - { keywords: "AI Trainer", location: "Remote", region: "Remote" }
+    - { keywords: "AI Evaluator", location: "Remote", region: "Remote" }
+    - { keywords: "Prompt Engineer", location: "Remote", region: "Remote" }
+    - { keywords: "Data Annotation", location: "Remote", region: "Remote" }
+  bayt:
+    - { keywords: "AI Specialist", location: "Remote", region: "Remote" }
+    - { keywords: "AI Trainer", location: "Dubai", region: "Remote" }
+  indeed:
+    - { keywords: "AI Trainer", location: "Remote", region: "Remote" }
+    - { keywords: "AI Evaluator", location: "Remote", region: "Remote" }
+    - { keywords: "Prompt Engineer", location: "Remote", region: "Remote" }
+  glassdoor:
+    - { keywords: "AI Trainer", location: "Remote", region: "Remote" }
+    - { keywords: "AI Evaluator", location: "Remote", region: "Remote" }

@@ -5,7 +5,9 @@ apply_screenshots/
 *.session
 session_*.json
 
-# personal data: generated documents and tracker history
+# personal data: config, generated documents and tracker history
+profile_config.yaml
+tracker.db
 *.pdf
 cv/*.pdf
 cv/main_*.tex

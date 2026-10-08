@@ -18,11 +18,11 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 TRACKER  = os.path.join(BASE_DIR, "job_search_tracker.csv")
 CREDENTIALS = os.path.join(BASE_DIR, "credentials.env")
 
-NAUKRI_SEARCHES = [
-    {"keywords": "Operations Manager",  "location": "Kanpur",    "region": "India"},
-    {"keywords": "Warehouse Manager",   "location": "Kanpur",    "region": "India"},
-    {"keywords": "Supply Chain Manager","location": "Delhi NCR", "region": "India"},
-    {"keywords": "Logistics Manager",   "location": "Lucknow",   "region": "India"},
+from config_loader import get_search_queries
+
+NAUKRI_SEARCHES = get_search_queries("naukri") or [
+    {"keywords": "AI Trainer", "location": "Remote", "region": "Remote"},
+    {"keywords": "AI Evaluator", "location": "Remote", "region": "Remote"},
 ]
 
 def load_creds():
@@ -45,15 +45,10 @@ def make_job_id(portal_prefix, company, title):
     s = slug(f"{company}_{title}")[:20]
     return f"{portal_prefix}_{s}_{int(time.time()) % 100000}"
 
+import tracker_db
+
 def load_existing_urls():
-    urls = set()
-    if os.path.exists(TRACKER):
-        with open(TRACKER, encoding='utf-8') as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                u = row.get('URL','').strip()
-                if u: urls.add(u)
-    return urls
+    return tracker_db.get_existing_urls()
 
 def main():
     creds = load_creds()
@@ -145,18 +140,11 @@ def main():
 
         browser.close()
 
-    # Append to CSV
+    # Append to SQLite tracker & CSV
     if jobs:
-        # Check header in existing file
-        with open(TRACKER, "r", encoding="utf-8") as f:
-            reader = csv.reader(f)
-            headers = next(reader)
-
-        with open(TRACKER, "a", newline="", encoding="utf-8") as f:
-            writer = csv.DictWriter(f, fieldnames=headers, extrasaction="ignore")
-            for j in jobs:
-                writer.writerow(j)
-        print(f"\n[Done] Appended {len(jobs)} direct Naukri job listings to tracker.")
+        tracker_db.insert_jobs(jobs)
+        tracker_db.export_to_csv()
+        print(f"\n[Done] Saved {len(jobs)} direct Naukri job listings to tracker.")
 
 if __name__ == "__main__":
     main()

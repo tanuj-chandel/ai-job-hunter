@@ -20,8 +20,10 @@ from datetime import datetime
 import screening_manager as sm
 
 # Force UTF-8 output so emoji/special chars don't crash on Windows cp1252 console
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 BASE_DIR      = os.path.dirname(os.path.abspath(__file__))
 CREDENTIALS_FILE = os.path.join(BASE_DIR, "credentials.env")
@@ -390,12 +392,20 @@ def navigate_to_first_job(page, portal, log):
     return False
 
 
+from config_loader import get_candidate_info
+
 def cover_letter_text(job):
+    cand = get_candidate_info()
+    full_name = cand.get("full_name", "Candidate")
+    phone = cand.get("phone", "")
+    email = cand.get("email", "")
+    li_disp = cand.get("linkedin_display", "")
+    cover_intro = cand.get("cover_letter_intro", "Dedicated to delivering accurate, rubric-compliant AI training evaluations.")
     return f"""Dear Hiring Manager,
 
 I am writing to express my strong interest in the {job.get('Title','AI Evaluator / Trainer')} role at {job.get('Company','your team')}.
 
-With an engineering background in Electronics & Communication (B.Tech) and an MBA, combined with hands-on expertise in prompt engineering, LLM output evaluation, and Python-driven automation, I am well-prepared to contribute to your AI evaluation and training pipelines.
+{cover_intro}
 
 My focus includes:
 - Rigorous evaluation of LLM responses for reasoning accuracy, factuality, instruction adherence, and hallucination detection.
@@ -406,9 +416,9 @@ My focus includes:
 I am available for remote opportunities and eager to deliver consistent, high-accuracy model training and evaluation results for {job.get('Company','your organization')}.
 
 Kind regards,
-Tanuj Chandel
-+91 7704077700 | tanuj.chandel@gmail.com
-linkedin.com/in/tanujchandel"""
+{full_name}
+{phone} | {email}
+{li_disp}"""
 
 def screenshot(page, job_id, label):
     try:
@@ -427,6 +437,19 @@ def slow_type(page, selector, text, delay=60):
     except Exception:
         pass
     return False
+
+SUCCESS_CONFIRMATION_KEYWORDS = [
+    "successfully applied", "application submitted", "application sent",
+    "thank you for applying", "your application has been",
+    "application received", "applied successfully",
+]
+
+def is_confirmed_submission(content):
+    """Return True only if confirmed submission keyword appears in page text/HTML."""
+    if not content:
+        return False
+    lower_text = str(content).lower()
+    return any(kw in lower_text for kw in SUCCESS_CONFIRMATION_KEYWORDS)
 
 # ─── Portal: LinkedIn Easy Apply ──────────────────────────────────────────────
 
@@ -465,7 +488,7 @@ def linkedin_login(page, creds, context, headless, log):
     log.append(f"[LinkedIn] Login uncertain: {page.url}")
     return False
 
-def linkedin_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
+def linkedin_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log, auto_apply=False):
     url = job.get("URL","")
     log.append(f"[LinkedIn] Opening job: {url}")
     page.goto(url, timeout=30000)
@@ -566,6 +589,10 @@ def linkedin_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
                   page.query_selector('button[aria-label*="Continue"]'))
 
         if submit:
+            if not auto_apply:
+                log.append("[LinkedIn] 📝 Safe Mode (discover-and-draft): Form prepared with CV/Cover. Submit button ready but NOT clicked. Review in open browser.")
+                screenshot(page, job['ID'], "draft_prepared")
+                return "drafted"
             log.append("[LinkedIn] Submitting application...")
             submit.click()
             time.sleep(4)
@@ -625,7 +652,7 @@ def naukri_login(page, creds, context, headless, log):
     context.storage_state(path=SESSION["naukri"])
     return True
 
-def naukri_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
+def naukri_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log, auto_apply=False):
     url = job.get("URL","")
     log.append(f"[Naukri] Opening job: {url}")
     try:
@@ -771,17 +798,12 @@ def naukri_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
         return "needs_manual_action"
 
     # PATCH E: Require explicit success confirmation — do NOT auto-mark applied
-    SUCCESS_KEYWORDS = [
-        "successfully applied", "application submitted", "application sent",
-        "thank you for applying", "your application has been",
-        "application received", "applied successfully",
-    ]
     page_text_after = ""
     try:
-        page_text_after = page.inner_text("body").lower()
+        page_text_after = page.inner_text("body")
     except Exception:
         pass
-    if any(kw in page_text_after for kw in SUCCESS_KEYWORDS):
+    if is_confirmed_submission(page_text_after):
         log.append("[Naukri] ✅ Application submitted and confirmed!")
         return "applied"
 
@@ -819,6 +841,10 @@ def naukri_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
                 'button:has-text("Send Application")', 'button[type="submit"]']:
         btn = page.query_selector(sel)
         if btn and btn.is_visible():
+            if not auto_apply:
+                log.append(f"[Naukri] 📝 Safe Mode (discover-and-draft): Form prepared with CV/Cover. Submit button '{sel}' ready but NOT clicked. Review in open browser.")
+                screenshot(page, job['ID'], "nk_draft_prepared")
+                return "drafted"
             try:
                 log.append(f"[Naukri] Clicking submit: {sel}")
                 btn.click()
@@ -826,10 +852,10 @@ def naukri_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
                 screenshot(page, job['ID'], "nk_submitted")
                 # PATCH E: verify success after submit click
                 try:
-                    page_text_final = page.inner_text("body").lower()
+                    page_text_final = page.inner_text("body")
                 except Exception:
                     page_text_final = ""
-                if any(kw in page_text_final for kw in SUCCESS_KEYWORDS):
+                if is_confirmed_submission(page_text_final):
                     log.append("[Naukri] ✅ Application submitted and confirmed!")
                     return "applied"
                 else:
@@ -926,7 +952,7 @@ def bayt_login(page, creds, context, headless, log):
     context.storage_state(path=SESSION["bayt"])
     return True
 
-def bayt_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
+def bayt_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log, auto_apply=False):
     url = job.get("URL","")
     log.append(f"[Bayt] Opening job: {url}")
     try:
@@ -1048,6 +1074,10 @@ def bayt_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
                 'input[type="submit"]', 'button[type="submit"]']:
         btn = page.query_selector(sel)
         if btn and btn.is_visible():
+            if not auto_apply:
+                log.append(f"[Bayt] 📝 Safe Mode (discover-and-draft): Form prepared with CV/Cover. Submit button '{sel}' ready but NOT clicked. Review in open browser.")
+                screenshot(page, job['ID'], "bayt_draft_prepared")
+                return "drafted"
             try:
                 log.append(f"[Bayt] Clicking submit: {sel}")
                 btn.click()
@@ -1114,7 +1144,7 @@ def indeed_login(page, creds, context, headless, log):
     context.storage_state(path=SESSION["indeed"])
     return True
 
-def indeed_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
+def indeed_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log, auto_apply=False):
     url = job.get("URL","")
     log.append(f"[Indeed] Opening job: {url}")
     try:
@@ -1171,11 +1201,12 @@ def indeed_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
         unfilled_required = []
 
         # Known contact fields
-        for fname, val in [('input[name*="firstName"]', "Tanuj"),
-                           ('input[name*="lastName"]', "Chandel"),
-                           ('input[name*="phone"]', creds.get("CANDIDATE_PHONE","+91 7704077700")),
-                           ('input[name*="city"]', "Kanpur"),
-                           ('input[name*="email"]', creds.get("INDEED_EMAIL",""))]:
+        _cand = get_candidate_info()
+        for fname, val in [('input[name*="firstName"]', _cand.get("first_name", "Jane")),
+                           ('input[name*="lastName"]', _cand.get("last_name", "Doe")),
+                           ('input[name*="phone"]', creds.get("CANDIDATE_PHONE", _cand.get("phone", ""))),
+                           ('input[name*="city"]', _cand.get("city", "Remote")),
+                           ('input[name*="email"]', creds.get("INDEED_EMAIL", _cand.get("email", "")))]:
             el = page.query_selector(fname)
             if el:
                 try:
@@ -1225,6 +1256,10 @@ def indeed_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
                page.query_selector('button[aria-label*="Continue"]'))
 
         if submit:
+            if not auto_apply:
+                log.append("[Indeed] 🛡️ SAFE MODE: Reached submit screen, application drafted. Not clicking submit (run with --auto-apply to submit).")
+                screenshot(page, job['ID'], "ind_drafted")
+                return "drafted"
             submit.click()
             time.sleep(4)
             screenshot(page, job['ID'], "ind_submitted")
@@ -1306,7 +1341,7 @@ def glassdoor_login(page, creds, context, headless, log):
     context.storage_state(path=SESSION["glassdoor"])
     return True
 
-def glassdoor_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
+def glassdoor_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log, auto_apply=False):
     url = job.get("URL","")
     log.append(f"[Glassdoor] Opening job: {url}")
     try:
@@ -1382,6 +1417,10 @@ def glassdoor_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log)
                page.query_selector('button:has-text("Next")'))
 
         if submit:
+            if not auto_apply:
+                log.append("[Glassdoor] 🛡️ SAFE MODE: Reached submit screen, application drafted. Not clicking submit (run with --auto-apply to submit).")
+                screenshot(page, job['ID'], "gd_drafted")
+                return "drafted"
             submit.click()
             time.sleep(4)
             screenshot(page, job['ID'], "gd_submitted")
@@ -1397,7 +1436,7 @@ def glassdoor_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log)
 
 # ─── Portal: Micro1 ───────────────────────────────────────────────────────────
 
-def micro1_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
+def micro1_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log, auto_apply=False):
     url = job.get("URL", "")
     log.append(f"[Micro1] Opening job: {url[:80]}")
     try:
@@ -1437,6 +1476,10 @@ def micro1_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
     for sel in ['button:has-text("Submit Application")', 'button:has-text("Submit")', 'button[type="submit"]']:
         sbtn = page.query_selector(sel)
         if sbtn and sbtn.is_visible():
+            if not auto_apply:
+                log.append("[Micro1] 🛡️ SAFE MODE: Found submit button, application drafted. Not clicking submit (run with --auto-apply to submit).")
+                screenshot(page, job['ID'], "m1_drafted")
+                return "drafted"
             try:
                 sbtn.click()
                 time.sleep(4)
@@ -1452,7 +1495,7 @@ def micro1_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
 
 # ─── Portal: Remotive / RemoteOK / Himalayas ─────────────────────────────────
 
-def remotive_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
+def remotive_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log, auto_apply=False):
     url = job.get("URL", "")
     portal_tag = detect_portal(url).upper() or "REMOTE"
     log.append(f"[{portal_tag}] Opening job: {url[:80]}")
@@ -1584,6 +1627,10 @@ def remotive_apply(page, job, creds, cv_pdf, cover_pdf, context, headless, log):
     for sel in ['button:has-text("Submit Application")', 'button:has-text("Submit application")', 'button:has-text("Submit")', 'button[type="submit"]']:
         sbtn = page.query_selector(sel)
         if sbtn and sbtn.is_visible():
+            if not auto_apply:
+                log.append(f"[{portal_tag} ATS] 🛡️ SAFE MODE: Reached submit screen, application drafted. Not clicking submit (run with --auto-apply to submit).")
+                screenshot(page, job['ID'], f"{portal_type}_drafted")
+                return "drafted"
             try:
                 sbtn.click()
                 time.sleep(4)
@@ -1610,42 +1657,42 @@ def load_session_args(portals_needed):
 
 # ─── Main Runner ──────────────────────────────────────────────────────────────
 
-def run_browser_apply(job_ids, headless=False):
+def run_browser_apply(job_ids, headless=False, auto_apply=False):
     from playwright.sync_api import sync_playwright
 
     creds = load_credentials()
     results = []
     applied_count = 0
+    drafted_count = 0
     skipped_count = 0
     error_count   = 0
     blocked_count = 0
     needs_input_count = 0
 
-    # Load jobs
+    import tracker_db
+
+    # Load jobs from SQLite tracker (tracker.db)
     jobs_to_apply = []
-    if os.path.exists(TRACKER_FILE):
-        with open(TRACKER_FILE, "r", encoding="utf-8") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                jid = str(row.get("ID",""))
-                url = str(row.get("URL",""))
-                is_target = (
-                    jid in job_ids or
-                    url in job_ids or
-                    "all" in job_ids or
-                    ("new" in job_ids and row.get("Status","") == "New") or
-                    ("review" in job_ids and row.get("Status","") == "Needs My Input") or
-                    ("manual" in job_ids and row.get("Status","") in ["Needs Manual Action", "Blocked - Apply Manually"])
-                )
-                if is_target:
-                    if row.get("Status","") == "Real Applied":
-                        continue
-                    if any(j.get("ID") == jid for j in jobs_to_apply):
-                        continue
-                    jobs_to_apply.append(dict(row))
+    for row in tracker_db.get_all_jobs():
+        jid = str(row.get("ID",""))
+        url = str(row.get("URL",""))
+        is_target = (
+            jid in job_ids or
+            url in job_ids or
+            "all" in job_ids or
+            ("new" in job_ids and row.get("Status","") == "New") or
+            ("review" in job_ids and row.get("Status","") == "Needs My Input") or
+            ("manual" in job_ids and row.get("Status","") in ["Needs Manual Action", "Blocked - Apply Manually"])
+        )
+        if is_target:
+            if row.get("Status","") == "Real Applied":
+                continue
+            if any(j.get("ID") == jid for j in jobs_to_apply):
+                continue
+            jobs_to_apply.append(dict(row))
 
     if not jobs_to_apply:
-        return {"status": "no_jobs", "message": "No matching unapplied jobs found.", "applied_count": 0, "results": []}
+        return {"status": "no_jobs", "message": "No matching unapplied jobs found.", "applied_count": 0, "drafted_count": 0, "results": []}
 
     # Determine which portals are needed
     portals_needed = list({detect_portal(j.get("URL","")) for j in jobs_to_apply})
@@ -1726,7 +1773,7 @@ def run_browser_apply(job_ids, headless=False):
             status = "error"
             try:
                 if portal in apply_fns:
-                    status = apply_fns[portal](page, job, creds, cv_pdf, cover_pdf, context, headless, log)
+                    status = apply_fns[portal](page, job, creds, cv_pdf, cover_pdf, context, headless, log, auto_apply=auto_apply)
                 else:
                     log.append(f"[BrowserAgent] Portal '{portal}' not supported yet.")
                     status = "skipped_unsupported_portal"
@@ -1759,6 +1806,10 @@ def run_browser_apply(job_ids, headless=False):
                 applied_count += 1
                 _update_tracker(job_id, "Real Applied", cv_pdf, cover_pdf, target_url=url)
                 print(f"[BrowserAgent] ✅ CONFIRMED APPLIED: {title} @ {company}", flush=True)
+            elif status == "drafted":
+                drafted_count += 1
+                _update_tracker(job_id, "Drafted", cv_pdf, cover_pdf, target_url=url)
+                print(f"[BrowserAgent] 🛡️ DRAFTED (Safe Mode): {title} @ {company}", flush=True)
             elif status == "needs_my_input":
                 needs_input_count += 1
                 _update_tracker(job_id, "Needs My Input", cv_pdf, cover_pdf, target_url=url)
@@ -1792,6 +1843,7 @@ def run_browser_apply(job_ids, headless=False):
     return {
         "status": "complete",
         "applied_count": applied_count,
+        "drafted_count": drafted_count,
         "needs_input_count": needs_input_count,
         "skipped_count": skipped_count,
         "blocked_count": blocked_count,
@@ -1803,43 +1855,27 @@ def run_browser_apply(job_ids, headless=False):
 
 
 def _update_tracker(job_id, new_status, cv_path, cover_path, target_url=None):
-    rows, fieldnames = [], []
-    if not os.path.exists(TRACKER_FILE):
-        return
-    updated = False
-    with open(TRACKER_FILE, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        fieldnames = reader.fieldnames or []
-        for row in reader:
-            matches_id = str(row.get("ID","")) == str(job_id)
-            matches_url = (target_url is None) or (str(row.get("URL","")) == str(target_url))
-            if matches_id and matches_url and not updated:
-                row["Status"]      = new_status
-                row["AppliedDate"] = datetime.now().strftime("%Y-%m-%d")
-                if cv_path:    row["CVFile"]    = os.path.relpath(cv_path, BASE_DIR)
-                if cover_path: row["CoverFile"] = os.path.relpath(cover_path, BASE_DIR)
-                updated = True
-            rows.append(row)
-    with open(TRACKER_FILE, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
+    import tracker_db
+    tracker_db.update_job_status(job_id, new_status, cv_path=cv_path, cover_path=cover_path, target_url=target_url)
+    tracker_db.export_to_csv()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Real Browser Auto-Apply for Tanuj Chandel")
+    parser = argparse.ArgumentParser(description="Real Browser Auto-Apply Agent")
     parser.add_argument("--jobs",    type=str, default="all",
                         help="Comma-separated job IDs, 'new', 'review', 'manual', or 'all'")
     parser.add_argument("--headless", action="store_true",
-                        help="Run in headless mode (background, no window)")
+                        help="Run in headless mode (default: visible browser window)")
     parser.add_argument("--visible",  action="store_true",
-                        help="Run with visible browser window (use for 1st-time login / CAPTCHA)")
+                        help="Run with visible browser window")
+    parser.add_argument("--auto-apply", action="store_true",
+                        help="Actually submit applications (default is False: discover-and-draft only)")
     args = parser.parse_args()
 
     job_ids    = [j.strip() for j in args.jobs.split(",")] if args.jobs else ["all"]
     run_hidden = args.headless and not args.visible
 
-    result = run_browser_apply(job_ids, headless=run_hidden)
+    result = run_browser_apply(job_ids, headless=run_hidden, auto_apply=args.auto_apply)
     print(json.dumps(result, indent=2))
 
 

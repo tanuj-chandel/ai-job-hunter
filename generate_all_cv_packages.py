@@ -19,7 +19,21 @@ def make_slug(name):
     slug = re.sub(r'[^a-zA-Z0-9]', '_', name.lower())
     return re.sub(r'_+', '_', slug).strip('_')
 
+from config_loader import get_candidate_info
+
 def compile_for_job(company, title, location):
+    cand = get_candidate_info()
+    first_name = cand.get("first_name", "Jane")
+    last_name  = cand.get("last_name", "Doe")
+    full_name  = cand.get("full_name", f"{first_name} {last_name}")
+    address    = cand.get("location", "Remote")
+    phone      = cand.get("phone", "")
+    email      = cand.get("email", "")
+    li_url     = cand.get("linkedin_url", "")
+    li_disp    = cand.get("linkedin_display", "")
+    bio        = cand.get("bio_summary", "Detail-oriented AI Evaluator & Prompt Engineer.")
+    cover_intro= cand.get("cover_letter_intro", "Dedicated to delivering accurate AI training datasets.")
+
     s = make_slug(company) if company else "company"
     cv_pdf = os.path.join(CV_DIR, f"main_{s}.pdf")
     cover_pdf = os.path.join(COVER_DIR, f"cover_{s}.pdf")
@@ -31,14 +45,14 @@ def compile_for_job(company, title, location):
         cv_tex = f"""\\documentclass[11pt,a4paper,sans]{{moderncv}}
 \\moderncvstyle{{banking}}
 \\moderncvcolor{{blue}}
-\\name{{Tanuj}}{{Chandel}}
-\\address{{India (Available for 100\\% Remote Global Roles)}}{{}}{{}}
-\\phone[mobile]{{+91 7704077700}}
-\\email{{tanuj.chandel@gmail.com}}
-\\extrainfo{{\\href{{https://linkedin.com/in/tanujchandel}}{{linkedin.com/in/tanujchandel}}}}
+\\name{{{first_name}}}{{{last_name}}}
+\\address{{{address}}}{{}}{{}}
+\\phone[mobile]{{{phone}}}
+\\email{{{email}}}
+\\extrainfo{{\\href{{{li_url}}}{{{li_disp}}}}}
 \\begin{{document}}
 \\makecvtitle
-\\small{{Detail-oriented AI Evaluator, Prompt Engineer \\& Model Trainer with engineering background (B.Tech ECE) and MBA. Experienced in assessing LLM responses, RLHF benchmark quality, instruction following, prompt optimization, and Python data automation. Tailored for {title} at {company}.}}
+\\small{{{bio} Tailored for {title} at {company}.}}
 \\section{{Core Competencies}}
 \\begin{{itemize}}
 \\item \\textbf{{AI \\& LLM Evaluation}}: RLHF Evaluation, Hallucination Detection, Multi-turn Prompt Testing, Quality Rubrics.
@@ -54,18 +68,18 @@ def compile_for_job(company, title, location):
         cover_tex = f"""\\documentclass[]{{article}}
 \\begin{{document}}
 \\title{{Cover Letter - {title} at {company}}}
-\\author{{Tanuj Chandel}}
+\\author{{{full_name}}}
 \\maketitle
 Dear Hiring Manager at {company},
 
 I am writing to express my strong interest in the {title} role at {company} ({location}).
-With an engineering background (B.Tech ECE) and MBA, paired with hands-on practice in LLM evaluation, prompt engineering, and Python workflow automation, I am dedicated to delivering accurate, rubric-compliant AI training datasets and evaluations.
+{cover_intro}
 
 I look forward to discussing how my analytical rigor aligns with your AI initiatives.
 
 Kind regards,
-Tanuj Chandel
-+91 7704077700 | tanuj.chandel@gmail.com
+{full_name}
+{phone} | {email}
 \\end{{document}}
 """
         with open(cover_tex_path, "w", encoding="utf-8") as f:
@@ -97,13 +111,12 @@ Tanuj Chandel
 
     return f"cv/main_{s}.pdf", f"cover_letters/cover_{s}.pdf"
 
+import tracker_db
+
 def main():
-    if not os.path.exists(TRACKER):
+    rows = tracker_db.get_all_jobs()
+    if not rows:
         return
-    with open(TRACKER, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        fieldnames = reader.fieldnames
-        rows = list(reader)
 
     count = 0
     for r in rows:
@@ -113,13 +126,11 @@ def main():
         cv_rel, cover_rel = compile_for_job(company, title, loc)
         r["CVFile"] = cv_rel
         r["CoverFile"] = cover_rel
+        if r.get("ID"):
+            tracker_db.update_job(r["ID"], {"CVFile": cv_rel, "CoverFile": cover_rel})
         count += 1
 
-    with open(TRACKER, "w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
-
+    tracker_db.export_to_csv()
     print(f"Generated tailored CV and Cover Letter packages for {count} jobs.")
 
 if __name__ == "__main__":
